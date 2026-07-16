@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High John Tech — Build Your AI Operating System</title>
+<meta name="description" content="High John Tech builds AI voice agents, automation, and intelligent business systems for local service companies. Never miss a call again. Serving Detroit metro.">
+<meta property="og:title" content="High John Tech — Build Your AI Operating System">
+<meta property="og:description" content="AI voice agents that answer every call 24/7, automation that runs your business, and the operating system underneath it all. Serving Detroit metro.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="High John Tech">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="High John Tech — Build Your AI Operating System">
+<meta name="twitter:description" content="Never miss a call again. AI voice agents, automation, and intelligent business systems for local service companies.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%2312112A' stroke='%2300CED1' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%2300CED1' stroke-width='2' opacity='0.6'/%3E%3Ctext x='50' y='59' font-family='Arial' font-weight='800' font-size='30' fill='%2300CED1' text-anchor='middle'%3ESV%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#12112A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#12122A;
+  --deep:#0C0C1E;
+  --navy:#1A1A2E;
+  --cyan:#00CED1;
+  --lime:#ADFF2F;
+  --gold:#FFFF00;
+  --ti:#9AA0B8;
+  --ti-dim:#565C78;
+  --paper:#EEEDF5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--deep);color:var(--paper);font-family:'Archivo',sans-serif;line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;}
+h1,h2{font-family:'Unbounded',sans-serif;font-weight:600;}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px;}
+a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;}
+
+/* film grain */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:200;opacity:0.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");}
+
+/* reveal system */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.6,.2,1), transform .7s cubic-bezier(.2,.6,.2,1);}
+.rv.in{opacity:1;transform:none;}
+.rv.d1{transition-delay:.08s;}.rv.d2{transition-delay:.16s;}.rv.d3{transition-delay:.24s;}.rv.d4{transition-delay:.32s;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .rv{opacity:1;transform:none;transition:none;}
+  .marquee-track{animation:none!important;}
+  *{animation-duration:0.001s!important;}
+}
+
+/* ===== NAV — slim, never wraps ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(12,12,30,0.75);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(154,160,184,0.12);}
+nav .bar{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 20px;max-width:1180px;margin:0 auto;}
+.wordmark{font-family:'Unbounded',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.06em;color:var(--paper);text-decoration:none;white-space:nowrap;}
+.wordmark b{color:var(--cyan);font-weight:800;}
+.nav-key{display:inline-flex;align-items:center;gap:10px;text-decoration:none;white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--lime);
+  border:1px solid rgba(173,255,47,0.35);padding:9px 16px;border-radius:2px;
+  background:rgba(173,255,47,0.04);transition:background .2s ease,color .2s ease;}
+.nav-key:hover{background:var(--lime);color:var(--deep);}
+.nav-key .k{width:6px;height:14px;border-radius:3px;background:currentColor;opacity:.85;}
+
+/* ===== HERO ===== */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:120px 0 80px;overflow:hidden;}
+#aperture{position:absolute;top:50%;right:-12vw;transform:translateY(-50%);width:min(88vw,780px);height:min(88vw,780px);opacity:0.9;pointer-events:none;}
+.hero .wrap{position:relative;z-index:2;width:100%;}
+.hero .kicker{display:inline-flex;align-items:center;gap:10px;color:var(--cyan);margin-bottom:26px;}
+.hero .kicker::before{content:'';width:22px;height:1px;background:var(--cyan);}
+.hero h1{font-size:clamp(34px,7.2vw,84px);line-height:1.04;letter-spacing:-0.01em;font-weight:800;max-width:11ch;
+  text-wrap:balance;}
+.hero h1 .thin{font-weight:300;display:block;}
+.hero .sub{margin-top:28px;max-width:440px;color:var(--ti);font-size:16px;}
+.hero .cta-row{margin-top:40px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+
+/* the key CTA — machined, restrained, singular */
+.btn-key{position:relative;display:inline-flex;align-items:center;gap:14px;text-decoration:none;overflow:hidden;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  background:var(--lime);color:var(--deep);padding:18px 26px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;
+  transition:transform .18s ease;}
+.btn-key .k{width:7px;height:20px;border-radius:3px;background:var(--deep);position:relative;flex:none;}
+.btn-key .k::after{content:'';position:absolute;left:50%;top:3px;bottom:3px;width:2px;transform:translateX(-50%);background:var(--lime);}
+.btn-key::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:36%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,0.5),transparent);transform:skewX(-16deg);transition:left .45s ease;}
+.btn-key:hover::after{left:130%;}
+.btn-key:hover{transform:translateY(-2px);}
+.link-plain{color:var(--paper);text-decoration:none;font-size:14px;border-bottom:1px solid var(--cyan);padding-bottom:3px;}
+
+/* ===== MARQUEE ===== */
+.marquee{border-top:1px solid rgba(154,160,184,0.14);border-bottom:1px solid rgba(154,160,184,0.14);
+  overflow:hidden;background:var(--indigo);}
+.marquee-track{display:flex;width:max-content;animation:mq 26s linear infinite;}
+.marquee-track span{font-family:'Unbounded',sans-serif;font-weight:300;font-size:13px;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--ti-dim);padding:16px 0;white-space:nowrap;}
+.marquee-track span i{font-style:normal;color:var(--cyan);padding:0 28px;}
+@keyframes mq{to{transform:translateX(-50%);}}
+
+/* ===== DIAGNOSTIC — editorial oversized numerals ===== */
+.diag{padding:110px 0 90px;background:var(--deep);}
+.sec-kicker{color:var(--cyan);display:block;margin-bottom:18px;}
+.diag h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;line-height:1.12;max-width:20ch;margin-bottom:70px;text-wrap:balance;}
+.fault{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:start;
+  padding:38px 0;border-top:1px solid rgba(154,160,184,0.16);}
+.fault:last-child{border-bottom:1px solid rgba(154,160,184,0.16);}
+.fault .big{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(52px,10vw,110px);line-height:0.9;
+  color:transparent;-webkit-text-stroke:1.5px var(--ti-dim);}
+.fault:hover .big{-webkit-text-stroke:1.5px var(--cyan);}
+.fault h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:clamp(17px,2.4vw,24px);margin-bottom:10px;color:var(--paper);}
+.fault p{color:var(--ti);font-size:15px;max-width:52ch;}
+.fault .tag{display:inline-block;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;
+  text-transform:uppercase;color:#FF7A6B;border:1px solid rgba(255,122,107,0.35);padding:4px 10px;border-radius:2px;}
+
+/* ===== METHOD — sticky stacking cards ===== */
+.method{padding:110px 0 60px;background:var(--indigo);
+  border-top:1px solid rgba(154,160,184,0.14);}
+.method h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;margin-bottom:60px;max-width:16ch;text-wrap:balance;}
+.stack{display:grid;gap:0;}
+.scard{position:sticky;background:var(--navy);border:1px solid rgba(154,160,184,0.18);border-radius:10px;
+  padding:36px 26px 40px;margin-bottom:26px;
+  box-shadow:0 -14px 34px rgba(0,0,0,0.45);}
+.scard:nth-child(1){top:92px;}
+.scard:nth-child(2){top:112px;}
+.scard:nth-child(3){top:132px;}
+.scard:nth-child(4){top:152px;}
+.scard:nth-child(5){top:172px;}
+.scard .row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.scard .num{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(40px,7vw,68px);line-height:1;color:var(--gold);}
+.scard .turn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--cyan);white-space:nowrap;}
+.scard h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:clamp(20px,3vw,30px);margin-bottom:10px;}
+.scard p{color:var(--ti);font-size:15px;max-width:50ch;}
+
+/* ===== SYSTEM — horizontal snap compartments ===== */
+.system{padding:110px 0;background:var(--deep);border-top:1px solid rgba(154,160,184,0.14);}
+.system h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;margin-bottom:14px;max-width:16ch;text-wrap:balance;}
+.system .lead{color:var(--ti);margin-bottom:50px;max-width:52ch;}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,340px);gap:16px;overflow-x:auto;
+  scroll-snap-type:x mandatory;padding:4px 20px 26px;margin:0 -20px;
+  scrollbar-width:none;}
+.rail::-webkit-scrollbar{display:none;}
+.cmp{scroll-snap-align:start;background:linear-gradient(180deg,#20203A,var(--navy));
+  border:1px solid rgba(154,160,184,0.18);border-radius:10px;padding:30px 24px 34px;position:relative;min-height:300px;
+  display:flex;flex-direction:column;}
+.cmp .no{font-family:'Unbounded',sans-serif;font-weight:800;font-size:60px;line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px var(--gold);margin-bottom:auto;}
+.cmp .slotline{width:44px;height:5px;border-radius:3px;background:#0A0A1C;position:relative;margin:26px 0 20px;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.9),0 0 0 1px rgba(0,206,209,0.3);}
+.cmp .slotline::after{content:'';position:absolute;left:4px;right:60%;top:1px;bottom:1px;border-radius:2px;
+  background:var(--cyan);box-shadow:0 0 8px 1px rgba(0,206,209,0.6);}
+.cmp h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:19px;margin-bottom:8px;}
+.cmp p{color:var(--ti);font-size:14px;}
+.rail-hint{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ti-dim);}
+
+/* ===== INDUSTRIES ===== */
+.industries{padding:100px 0;background:var(--indigo);border-top:1px solid rgba(154,160,184,0.14);}
+.industries h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;margin-bottom:50px;max-width:16ch;text-wrap:balance;}
+.ind-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.ind-card{background:var(--indigo-2,#1A1A2E);border:1px solid rgba(154,160,184,0.18);border-radius:10px;padding:26px 24px;}
+.ind-card h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:18px;margin-bottom:8px;}
+.ind-card p{color:var(--ti);font-size:13px;}
+.ind-card .tag{display:inline-block;margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan);}
+
+/* ===== RESOURCES ===== */
+.resources{padding:100px 0;background:var(--navy);border-top:1px solid rgba(154,160,184,0.14);border-bottom:1px solid rgba(154,160,184,0.14);}
+.resources h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;margin-bottom:50px;max-width:16ch;text-wrap:balance;}
+.res-list{display:flex;flex-direction:column;}
+.res-row{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:24px 0;border-bottom:1px solid rgba(154,160,184,0.16);}
+.res-row:last-child{border-bottom:none;}
+.res-row h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:17px;margin-bottom:6px;}
+.res-row p{color:var(--ti);font-size:13px;max-width:52ch;}
+.res-row .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);
+  border:1px solid rgba(255,255,0,0.35);padding:5px 12px;border-radius:2px;white-space:nowrap;}
+
+/* ===== SERVICES — the ladder ===== */
+.services{padding:110px 0;background:var(--indigo);border-top:1px solid rgba(154,160,184,0.14);}
+.services h2{font-size:clamp(26px,4.6vw,48px);font-weight:600;margin-bottom:14px;max-width:16ch;text-wrap:balance;}
+.services .lead{color:var(--ti);margin-bottom:60px;max-width:52ch;}
+.tier-group{margin-bottom:64px;}
+.tier-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--ti-dim);display:block;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid rgba(154,160,184,0.16);}
+.tier{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start;
+  padding:32px 0;border-bottom:1px solid rgba(154,160,184,0.12);}
+.tier .tno{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(36px,6vw,56px);line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px var(--ti-dim);transition:-webkit-text-stroke .2s ease;}
+.tier:hover .tno{-webkit-text-stroke:1.5px var(--lime);}
+.tier-body h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:clamp(17px,2.4vw,23px);margin-bottom:8px;}
+.tier-body p{color:var(--ti);font-size:14px;max-width:54ch;margin-bottom:16px;}
+.tier-meta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.price{font-family:'Unbounded',sans-serif;font-weight:600;font-size:16px;color:var(--paper);}
+.price small{font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:11px;color:var(--ti-dim);letter-spacing:0.06em;}
+.credit{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--cyan);border:1px solid rgba(0,206,209,0.35);padding:4px 10px;border-radius:2px;}
+.tier-cta{display:inline-flex;align-items:center;gap:10px;text-decoration:none;white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--lime);
+  border:1px solid rgba(173,255,47,0.35);padding:10px 18px;border-radius:2px;
+  background:rgba(173,255,47,0.04);transition:background .2s ease,color .2s ease;}
+.tier-cta:hover{background:var(--lime);color:var(--deep);}
+.tier-cta .k{width:6px;height:14px;border-radius:3px;background:currentColor;opacity:.85;}
+.custom-note{margin-top:44px;padding:30px 26px;border:1px dashed rgba(154,160,184,0.3);border-radius:10px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.custom-note p{color:var(--ti);font-size:14px;max-width:48ch;}
+.custom-note strong{color:var(--paper);display:block;font-family:'Unbounded',sans-serif;font-weight:400;font-size:17px;margin-bottom:6px;}
+@media(min-width:860px){
+  .tier{grid-template-columns:auto 1fr auto;align-items:center;}
+}
+
+/* ===== PROOF ===== */
+.proof{padding:100px 0;background:var(--indigo);text-align:center;border-top:1px solid rgba(154,160,184,0.14);}
+.proof h2{font-size:clamp(24px,3.6vw,36px);font-weight:600;margin-bottom:14px;}
+.proof p{color:var(--ti);max-width:44ch;margin:0 auto 34px;}
+.status{display:inline-flex;align-items:center;gap:12px;border:1px solid rgba(173,255,47,0.35);
+  padding:16px 26px;border-radius:2px;background:rgba(173,255,47,0.04);}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px 2px rgba(173,255,47,0.5);
+  animation:blink 2.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:.45;}50%{opacity:1;}}
+.status .mono{color:var(--paper);}
+
+/* ===== FOUNDER ===== */
+.founder{padding:110px 0;background:var(--deep);}
+.founder .grid{display:grid;grid-template-columns:1fr;gap:26px;max-width:720px;}
+.founder .sig{font-family:'Unbounded',sans-serif;font-weight:300;font-size:clamp(22px,3.4vw,34px);line-height:1.3;text-wrap:balance;}
+.founder .sig em{font-style:normal;color:var(--cyan);}
+.founder .who{display:flex;align-items:center;gap:16px;}
+.founder .mark{width:52px;height:52px;border-radius:50%;flex:none;
+  border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-weight:800;font-size:15px;color:var(--gold);}
+.founder .who strong{display:block;font-size:16px;font-weight:500;}
+.founder .who span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ti-dim);}
+
+/* ===== FINAL ===== */
+.final{padding:120px 0 130px;background:var(--indigo);text-align:left;border-top:1px solid rgba(154,160,184,0.14);}
+.final h2{font-size:clamp(30px,6vw,64px);font-weight:800;line-height:1.06;max-width:14ch;margin-bottom:44px;text-wrap:balance;}
+.final h2 .thin{font-weight:300;}
+
+footer{border-top:1px solid rgba(154,160,184,0.14);padding:30px 0;background:var(--deep);}footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ti-dim);}
+
+@media(min-width:860px){
+  .founder .grid{grid-template-columns:1.4fr 1fr;align-items:center;}
+  .scard{padding:44px 40px 48px;}
+  .cmp{min-height:340px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="bar">
+    <a class="wordmark" href="#home">HIGH<b>JOHN</b> TECH</a>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <a class="link-plain mono" href="#home" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Home</a>
+      <a class="link-plain mono" href="#services" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Solutions</a>
+      <a class="link-plain mono" href="#industries" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Industries</a>
+      <a class="link-plain mono" href="#casestudies" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Case Studies</a>
+      <a class="link-plain mono" href="#resources" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Resources</a>
+      <a class="link-plain mono" href="#about" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">About</a>
+      <a class="link-plain mono" href="#contact" style="font-size:11px;border-bottom-color:rgba(154,160,184,0.4);">Contact</a>
+      <a class="nav-key" href="#assessment"><span class="k" aria-hidden="true"></span>Assessment</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="home">
+  <canvas id="aperture" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <span class="kicker mono rv">AI operating system architecture</span>
+    <h1 class="rv d1">Build your<span class="thin">AI operating system.</span></h1>
+    <p class="sub rv d2">High John Tech transforms businesses into intelligent organizations through AI architecture, automation, and digital workforce systems.</p>
+    <div class="cta-row rv d3">
+      <a class="btn-key" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Request your assessment</a>
+      <a class="link-plain" href="#method">See the method</a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Build once<i>·</i>Automate forever<i>·</i>Protected intelligence<i>·</i>Detroit<i>·</i>Build once<i>·</i>Automate forever<i>·</i>Protected intelligence<i>·</i>Detroit<i>·</i></span>
+    <span>Build once<i>·</i>Automate forever<i>·</i>Protected intelligence<i>·</i>Detroit<i>·</i>Build once<i>·</i>Automate forever<i>·</i>Protected intelligence<i>·</i>Detroit<i>·</i></span>
+  </div>
+</div>
+
+<section class="diag">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">System diagnostic</span>
+    <h2 class="rv d1">Your business is limited by human dependency.</h2>
+    <div class="fault rv">
+      <div class="big">01</div>
+      <div>
+        <h3>Missed calls become missed revenue</h3>
+        <p>Every unanswered call is a customer choosing whoever answered first.</p>
+        <span class="tag">Leak detected</span>
+      </div>
+    </div>
+    <div class="fault rv">
+      <div class="big">02</div>
+      <div>
+        <h3>Knowledge lives in one person's head</h3>
+        <p>Processes only work because you're the one running them.</p>
+        <span class="tag">Leak detected</span>
+      </div>
+    </div>
+    <div class="fault rv">
+      <div class="big">03</div>
+      <div>
+        <h3>Growth means more hours, not leverage</h3>
+        <p>Scaling shouldn't require working harder to get there.</p>
+        <span class="tag">Leak detected</span>
+      </div>
+    </div>
+    <div class="rv" style="margin-top:48px;">
+      <a class="btn-key" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Find your leaks — $222</a>
+    </div>
+  </div>
+</section>
+
+<section class="method" id="method">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">The vault method</span>
+    <h2 class="rv d1">Five turns. The vault opens.</h2>
+    <div class="stack">
+      <div class="scard">
+        <div class="row"><span class="num">01</span><span class="turn">Turn right</span></div>
+        <h3>Discover</h3>
+        <p>Find the intelligence already trapped inside your business — the knowledge, the process, the patterns nobody wrote down.</p>
+      </div>
+      <div class="scard">
+        <div class="row"><span class="num">02</span><span class="turn">Turn left</span></div>
+        <h3>Architect</h3>
+        <p>Design the AI operating system around it — every layer mapped before anything gets built.</p>
+      </div>
+      <div class="scard">
+        <div class="row"><span class="num">03</span><span class="turn">Turn right</span></div>
+        <h3>Install</h3>
+        <p>Deploy the intelligent infrastructure — voice agents, automations, and the systems that run without you.</p>
+      </div>
+      <div class="scard">
+        <div class="row"><span class="num">04</span><span class="turn">Turn left</span></div>
+        <h3>Optimize</h3>
+        <p>Improve performance against real numbers — response times, booked calls, recovered revenue.</p>
+      </div>
+      <div class="scard">
+        <div class="row"><span class="num">05</span><span class="turn">Turn right</span></div>
+        <h3>Expand</h3>
+        <p>Add new intelligence layers as you grow — the vault gets bigger, not the workload.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="system">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">The system</span>
+    <h2 class="rv d1">Four compartments. One vault.</h2>
+    <p class="lead rv d2">Connected layers, not a service menu — each compartment locks into the next.</p>
+  </div>
+  <div class="wrap">
+    <div class="rail rv d2">
+      <div class="cmp">
+        <div class="no">01</div>
+        <div class="slotline" aria-hidden="true"></div>
+        <h3>AI voice agents</h3>
+        <p>Answer every call, 24 hours a day, no missed leads.</p>
+      </div>
+      <div class="cmp">
+        <div class="no">02</div>
+        <div class="slotline" aria-hidden="true"></div>
+        <h3>Knowledge vaults</h3>
+        <p>Turn scattered know-how into a searchable system.</p>
+      </div>
+      <div class="cmp">
+        <div class="no">03</div>
+        <div class="slotline" aria-hidden="true"></div>
+        <h3>Automation workflows</h3>
+        <p>Repetitive work runs itself, correctly, every time.</p>
+      </div>
+      <div class="cmp">
+        <div class="no">04</div>
+        <div class="slotline" aria-hidden="true"></div>
+        <h3>CRM intelligence</h3>
+        <p>Every lead tracked, scored, and followed up automatically.</p>
+      </div>
+    </div>
+    <span class="rail-hint">Drag →</span>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">The ladder</span>
+    <h2 class="rv d1">Start small. Ascend when it pays for itself.</h2>
+    <p class="lead rv d2">Every entry offer is fully credited toward any build — you never pay for the same step twice.</p>
+
+    <div class="tier-group rv">
+      <span class="tier-label">Entry — see inside your business first</span>
+      <div class="tier">
+        <span class="tno">A</span>
+        <div class="tier-body">
+          <h3>Discovery Call</h3>
+          <p>A working session on your workflows, tech stack, and where time and money are leaking. You leave with a clear read on what to fix first.</p>
+          <div class="tier-meta">
+            <span class="price">$222<small> — credited toward any build</small></span>
+            <span class="credit">100% credited</span>
+          </div>
+        </div>
+        <a class="tier-cta" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Book it</a>
+      </div>
+      <div class="tier">
+        <span class="tno">B</span>
+        <div class="tier-body">
+          <h3>Full AI Audit</h3>
+          <p>Complete diagnostic of your operation: AI Opportunity Matrix, priority fix list ranked by revenue impact, ROI estimate per fix, and a Loom walkthrough — delivered within 24 hours of your session.</p>
+          <div class="tier-meta">
+            <span class="price">$1,500<small> — credited toward any build</small></span>
+            <span class="credit">100% credited</span>
+          </div>
+        </div>
+        <a class="tier-cta" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Book it</a>
+      </div>
+    </div>
+
+    <div class="tier-group rv">
+      <span class="tier-label">Builds — the operating system, installed</span>
+      <div class="tier">
+        <span class="tno">01</span>
+        <div class="tier-body">
+          <h3>AI Front Desk — Starter</h3>
+          <p>Every call answered, every missed call texted back within seconds, every lead captured. The compartment most businesses need first.</p>
+          <div class="tier-meta">
+            <span class="price">$2,500<small> setup</small> + $497<small>/mo</small></span>
+          </div>
+        </div>
+        <a class="tier-cta" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Start here</a>
+      </div>
+      <div class="tier">
+        <span class="tno">02</span>
+        <div class="tier-body">
+          <h3>Complete Revenue Engine — Pro</h3>
+          <p>Front desk plus the full pipeline: lead generation, automated follow-up, booking, nurture sequences, and CRM intelligence working as one system.</p>
+          <div class="tier-meta">
+            <span class="price">Custom<small> — priced to your operation</small></span>
+          </div>
+        </div>
+        <a class="tier-cta" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Talk to sales</a>
+      </div>
+      <div class="tier">
+        <span class="tno">03</span>
+        <div class="tier-body">
+          <h3>Full AI Operating System — Enterprise</h3>
+          <p>The whole vault: AI workforce, knowledge systems, automation across every department, dashboards, and ongoing optimization. Your business, running on intelligent infrastructure.</p>
+          <div class="tier-meta">
+            <span class="price">Contact sales<small> — scoped to your organization</small></span>
+          </div>
+        </div>
+        <a class="tier-cta" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Talk to sales</a>
+      </div>
+    </div>
+
+    <div class="custom-note rv">
+      <p><strong>Need something the ladder doesn't cover?</strong>Custom AI apps, agent meshes, knowledge vaults, white-label systems — scoped on a call, priced by outcome.</p>
+      <a class="btn-key" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Scope it with Cortaz</a>
+    </div>
+  </div>
+</section>
+
+<section class="industries" id="industries">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">Industries</span>
+    <h2 class="rv d1">Built for the businesses that answer the phone for a living.</h2>
+    <div class="ind-grid rv d2">
+      <div class="ind-card">
+        <h3>Roofing</h3>
+        <p>Storm-response calls, estimate follow-up, and insurance-claim urgency — every missed call is a job that goes to whoever answered first.</p>
+        <span class="tag">Active — Detroit metro</span>
+      </div>
+      <div class="ind-card">
+        <h3>HVAC</h3>
+        <p>Emergency repair calls at 2am, seasonal surge volume, and dispatch coordination that shouldn't depend on one person being awake.</p>
+        <span class="tag">Active — Detroit metro</span>
+      </div>
+      <div class="ind-card">
+        <h3>Bail bonds</h3>
+        <p>24/7 by definition — every unanswered call is a client who's already calling the next agency before you call back.</p>
+        <span class="tag">Active — Detroit metro</span>
+      </div>
+      <div class="ind-card">
+        <h3>Healthcare &amp; wellness practices</h3>
+        <p>Patient intake, appointment reminders, and front-desk coverage — built HIPAA-aware from the ground up, not bolted on after.</p>
+        <span class="tag">Onboarding</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="resources" id="resources">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">Resources</span>
+    <h2 class="rv d1">Start here before you book a call.</h2>
+    <div class="res-list rv d2">
+      <div class="res-row">
+        <div><h3>AI Readiness Assessment</h3><p>8 questions, 2 minutes — find out where your business actually stands before we ever talk.</p></div>
+        <span class="tag">Free</span>
+      </div>
+      <div class="res-row">
+        <div><h3>The Vault Method</h3><p>The 5-step framework behind every build: Discover, Architect, Install, Optimize, Expand.</p></div>
+        <span class="tag">Guide</span>
+      </div>
+      <div class="res-row">
+        <div><h3>Sample audit report</h3><p>A real, redacted example of what you get back from a Full AI Audit — see the format before you buy it.</p></div>
+        <span class="tag">Sample</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proof" id="casestudies">
+  <div class="wrap">
+    <h2 class="rv">Proof, as it happens</h2>
+    <p class="rv d1">Case studies are engraved here as systems go live — nothing on this wall is invented.</p>
+    <div class="status rv d2">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="mono">Currently onboarding — Detroit metro</span>
+    </div>
+  </div>
+</section>
+
+<section class="founder" id="about">
+  <div class="wrap">
+    <div class="grid">
+      <p class="sig rv">"I design intelligent business systems so founders can run their company from <em>vision</em>, not from the inbox."</p>
+      <div class="who rv d1">
+        <span class="mark">CC</span>
+        <div>
+          <strong>Cortaz Calhoun Jr.</strong>
+          <span>AI operating system architect</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="assessment">
+  <div class="wrap">
+    <span class="sec-kicker mono rv">Start here</span>
+    <h2 class="rv d1">What's running your business <span class="thin">right now?</span></h2>
+    <a class="btn-key rv d2" href="https://links.smartvaultco.com/widget/booking/AOs020WScijcC3BNeVfx"><span class="k" aria-hidden="true"></span>Request your assessment</a>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <span>High John Tech · (762) 226-2982 · hello@highjohn.tech</span>
+    <span class="mono">Build once · Automate forever</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* reveal on scroll */
+  var els=document.querySelectorAll('.rv');
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:0.15});
+    els.forEach(function(el){ io.observe(el); });
+  }else{
+    els.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* canvas aperture — rendered vault iris */
+  var cv=document.getElementById('aperture');
+  if(!cv)return;
+  var ctx=cv.getContext('2d');
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  function size(){
+    var r=cv.getBoundingClientRect();
+    cv.width=r.width*dpr;cv.height=r.height*dpr;
+  }
+  size();window.addEventListener('resize',size);
+  var t=0, scrollV=0;
+  window.addEventListener('scroll',function(){scrollV=window.scrollY;},{passive:true});
+  function arcSet(cx,cy,r,segs,gap,rot,w,color,alpha){
+    ctx.lineWidth=w;ctx.strokeStyle=color;ctx.globalAlpha=alpha;
+    var span=(Math.PI*2)/segs;
+    for(var i=0;i<segs;i++){
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,rot+i*span+gap/2,rot+(i+1)*span-gap/2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  function ticks(cx,cy,r1,r2,n,rot,color,alpha,w){
+    ctx.lineWidth=w;ctx.strokeStyle=color;ctx.globalAlpha=alpha;
+    for(var i=0;i<n;i++){
+      var a=rot+(Math.PI*2/n)*i;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);
+      ctx.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  function frame(){
+    var w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2;
+    ctx.clearRect(0,0,w,h);
+    var rot=t*0.0016 + scrollV*0.0012;
+    /* outer segmented ring */
+    arcSet(cx,cy,R*0.92,8,0.22,rot,2*dpr,'#565C78',0.7);
+    /* tick ring */
+    ticks(cx,cy,R*0.80,R*0.85,72,-rot*0.6,'#565C78',0.45,1*dpr);
+    /* cyan live arc */
+    arcSet(cx,cy,R*0.70,3,1.5,rot*1.6,2.5*dpr,'#00CED1',0.85);
+    /* mid segmented */
+    arcSet(cx,cy,R*0.58,12,0.16,-rot*0.9,1.5*dpr,'#565C78',0.5);
+    /* inner ticks */
+    ticks(cx,cy,R*0.44,R*0.48,36,rot*1.2,'#00CED1',0.35,1*dpr);
+    /* lime pin arc */
+    arcSet(cx,cy,R*0.36,1,5.6,rot*2.2,2.5*dpr,'#ADFF2F',0.9);
+    /* hub */
+    ctx.beginPath();ctx.arc(cx,cy,R*0.06,0,Math.PI*2);
+    ctx.strokeStyle='#9AA0B8';ctx.lineWidth=1.5*dpr;ctx.globalAlpha=0.8;ctx.stroke();ctx.globalAlpha=1;
+    t++;
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+
+</body>
+</html>
